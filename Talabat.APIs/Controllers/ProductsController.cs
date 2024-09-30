@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
@@ -14,6 +15,15 @@ namespace Talabat.APIs.Controllers
         public ProductsController(IGenericRepository<Product> productsRepo)
         {
             _productsRepo = productsRepo;
+        }
+
+        //{{baseUrl}}/api/Products 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        {
+            var products = await _productsRepo.GetAllAsync();
+           
+            return Ok(products);
         }
     }
 }
