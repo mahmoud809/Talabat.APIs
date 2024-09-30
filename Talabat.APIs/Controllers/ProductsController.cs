@@ -7,11 +7,11 @@ namespace Talabat.APIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : BaseApiController
+    public class ProductsController : BaseApiController
     {
         private readonly IGenericRepository<Product> _productsRepo;
 
-        public ProductController(IGenericRepository<Product> productsRepo)
+        public ProductsController(IGenericRepository<Product> productsRepo)
         {
             _productsRepo = productsRepo;
         }
