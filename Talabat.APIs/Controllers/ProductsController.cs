@@ -25,5 +25,18 @@ namespace Talabat.APIs.Controllers
            
             return Ok(products);
         }
+
+
+        //{{baseUrl}}/api/Products 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProduct(int id)
+        {
+            var product = await _productsRepo.GetAsync(id);
+            
+            if(product is null)
+                return NotFound();
+
+            return Ok(product);
+        }
     }
 }
