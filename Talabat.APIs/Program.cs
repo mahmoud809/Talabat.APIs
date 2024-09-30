@@ -1,10 +1,15 @@
 
+using Microsoft.EntityFrameworkCore;
+using Talabat.Core.Repositories.Contract;
+using Talabat.Repository;
+using Talabat.Repository.Data;
+
 namespace Talabat.APIs
 {
     public class Program
     {
         //Entry Point
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +23,42 @@ namespace Talabat.APIs
             webApplicationBuilder.Services.AddEndpointsApiExplorer();
             webApplicationBuilder.Services.AddSwaggerGen(); 
 
+            webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
+            {
+                options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            //Allow DI For All Controllers that Implement "IGenericRepository"
+            webApplicationBuilder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
             #endregion
 
             var app = webApplicationBuilder.Build();
 
-            #region Configure Kestrel Middlewares [Start Creating Pipelines That Request Will Go Through It]
+            #region Update-Database [Apply All migrations before "Run"] & Data Seeding
             
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var _dbContext = services.GetRequiredService<StoreContext>(); // ASK CLR For Creating Object From DbContext Explicitly
+
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+
+            try
+            {
+                await _dbContext.Database.MigrateAsync(); // Update-Database
+                await StoreContextSeed.SeedAsync(_dbContext); // Data Seeding
+            }
+            catch (Exception ex)
+            {
+                var logger = loggerFactory.CreateLogger<Program>();
+                logger.LogError(ex, "An error has been occured during apply the migration");
+
+            } 
+
+            #endregion
+
+            #region Configure Kestrel Middlewares [Start Creating Pipelines That Request Will Go Through It]
+
             // Configure the HTTP request pipeline. [Ordering of piplines is important!]
             if (app.Environment.IsDevelopment())
             {
