@@ -71,6 +71,8 @@ namespace Talabat.APIs
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.MapControllers(); //This doesn't make any assumptions about routing and will rely on the user doing attribute routing (most commonly used in WebAPI controllers) to get requests to the right place.
 
             #endregion
