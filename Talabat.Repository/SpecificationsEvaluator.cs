@@ -17,7 +17,7 @@ namespace Talabat.Repository
             var query = inputQuery; // _dbContext.Set(TEntity)
            
             if(spec.Criteria is not null)
-               return query = query.Where(spec.Criteria); // _dbContext.Set(TEntity).Where("Criteria") : "Criteria" >> (P => P.Id == 1).
+                query = query.Where(spec.Criteria); // _dbContext.Set(TEntity).Where("Criteria") : "Criteria" >> (P => P.Id == 1).
 
             //Includes: may be the query has many includes for example : product has
             //1.Include(P => P.Brand)
