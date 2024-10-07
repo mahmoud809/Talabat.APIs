@@ -1,5 +1,9 @@
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Talabat.APIs.Errors;
+using Talabat.APIs.Helpers;
+using Talabat.APIs.Middlewares;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repository;
 using Talabat.Repository.Data;
@@ -31,6 +35,27 @@ namespace Talabat.APIs
             //Allow DI For All Controllers that Implement "IGenericRepository"
             webApplicationBuilder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+            //Allow DI For AutoMapper [typeof(MappingProfiles)] => means Apply All Config in this AutoMapping class.
+            webApplicationBuilder.Services.AddAutoMapper(typeof(MappingProfiles));
+
+            //Validation Error Handling
+            webApplicationBuilder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = (actionContext) =>
+                {
+                    var errors = actionContext.ModelState.Where(e => e.Value.Errors.Count() > 0)
+                        .SelectMany(x => x.Value.Errors)
+                        .Select(x => x.ErrorMessage)
+                        .ToList();
+
+                    var response = new ApiValidationErrorResponse()
+                    {
+                        Errors = errors
+                    };
+
+                    return new BadRequestObjectResult(response);
+                };
+            });
             #endregion
 
             var app = webApplicationBuilder.Build();
@@ -53,11 +78,13 @@ namespace Talabat.APIs
                 var logger = loggerFactory.CreateLogger<Program>();
                 logger.LogError(ex, "An error has been occured during apply the migration");
 
-            } 
+            }
 
             #endregion
 
             #region Configure Kestrel Middlewares [Start Creating Pipelines That Request Will Go Through It]
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             // Configure the HTTP request pipeline. [Ordering of piplines is important!]
             if (app.Environment.IsDevelopment())
@@ -66,7 +93,11 @@ namespace Talabat.APIs
                 app.UseSwaggerUI();
             }
 
+            app.UseStatusCodePagesWithRedirects("/errors/{0}");
+
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.MapControllers(); //This doesn't make any assumptions about routing and will rely on the user doing attribute routing (most commonly used in WebAPI controllers) to get requests to the right place.
 
