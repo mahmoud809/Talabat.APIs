@@ -31,13 +31,13 @@ namespace Talabat.APIs.Controllers
 
         //{{baseUrl}}/api/Products 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductToReturn>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<ProductToReturn>>> GetProducts()
         {
             var spec = new ProductWithBrandAndCategorySpecifications();
 
             var products = await _productsRepo.GetAllWithSpecAsync(spec);
            
-            return Ok(_mapper.Map<IEnumerable<Product>, IEnumerable<ProductToReturn>>(products));
+            return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturn>>(products));
         }
 
         [ProducesResponseType(typeof(ProductToReturn) , StatusCodes.Status200OK)] //just Improving for Swagger Docs.
@@ -56,7 +56,7 @@ namespace Talabat.APIs.Controllers
         }
 
         [HttpGet("brands")] // GET: {{baseURL}}/api/products/brands
-        public async Task<ActionResult<IEnumerable<ProductBrand>>> GetBrands()
+        public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetBrands()
         {
             var brands = await _brandsRepo.GetAllAsync();
 
@@ -64,7 +64,7 @@ namespace Talabat.APIs.Controllers
         }
 
         [HttpGet("categories")] // GET : {{baseURL}}/api/products/categories
-        public async Task<ActionResult<IEnumerable<ProductCategory>>> GetCategories()
+        public async Task<ActionResult<IReadOnlyList<ProductCategory>>> GetCategories()
         {
             var categories = await _categoriesRepo.GetAllAsync();
             return Ok(categories);
