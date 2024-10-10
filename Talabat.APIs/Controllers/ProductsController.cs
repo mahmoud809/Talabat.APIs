@@ -40,7 +40,11 @@ namespace Talabat.APIs.Controllers
 
             var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturn>>(products);
 
-            return Ok(new Pagination<ProductToReturn>(specParams.PageIndex , specParams.PageSize , data));
+            var countSpec = new ProductWithFilterationAndCountSpecifications(specParams);
+
+            var count = await _productsRepo.GetCountAsync(countSpec);
+
+            return Ok(new Pagination<ProductToReturn>(specParams.PageIndex , specParams.PageSize , count ,data));
         }
 
         [ProducesResponseType(typeof(ProductToReturn) , StatusCodes.Status200OK)] //just Improving for Swagger Docs.
