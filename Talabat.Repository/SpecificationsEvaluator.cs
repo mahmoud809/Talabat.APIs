@@ -19,6 +19,12 @@ namespace Talabat.Repository
             if(spec.Criteria is not null)
                 query = query.Where(spec.Criteria); // _dbContext.Set(TEntity).Where("Criteria") : "Criteria" >> (P => P.Id == 1).
 
+            if(spec.OrderBy is not null)
+                query = query.OrderBy(spec.OrderBy);
+
+            else if(spec.OrderByDesc is not null) 
+                query = query.OrderByDescending(spec.OrderByDesc);
+
             //Includes: may be the query has many includes for example : product has
             //1.Include(P => P.Brand)
             //2.Include(P => P.Category)
