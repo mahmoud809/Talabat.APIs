@@ -25,6 +25,9 @@ namespace Talabat.Repository
             else if(spec.OrderByDesc is not null) 
                 query = query.OrderByDescending(spec.OrderByDesc);
 
+            if(spec.IsPaginationEnable)
+                query = query.Skip(spec.Skip).Take(spec.Take);
+
             //Includes: may be the query has many includes for example : product has
             //1.Include(P => P.Brand)
             //2.Include(P => P.Category)

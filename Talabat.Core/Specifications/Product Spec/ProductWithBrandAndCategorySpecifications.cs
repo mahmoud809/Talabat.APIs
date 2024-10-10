@@ -40,6 +40,12 @@ namespace Talabat.Core.Specifications.Product_Spec
             {
                 AddOrderBy(P => P.Name);
             }
+
+            //totalPage = 18 ~ 20
+            //pageSize = 5
+            //pageIndex = 3
+
+            ApplyPagination((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
         }
 
         //This Constructor Will be Used to create an object , That Will be Use to get [ a specific product by id ].
@@ -53,5 +59,6 @@ namespace Talabat.Core.Specifications.Product_Spec
             Includes.Add(P => P.Brand);
             Includes.Add(P => P.Category);
         }
+
     }
 }
