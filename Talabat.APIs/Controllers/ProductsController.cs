@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Talabat.APIs.DTOs;
 using Talabat.APIs.Errors;
+using Talabat.APIs.Helpers;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Specifications.Product_Spec;
@@ -31,13 +32,15 @@ namespace Talabat.APIs.Controllers
 
         //{{baseUrl}}/api/Products 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<ProductToReturn>>> GetProducts([FromQuery] ProductSpecParams specParams)
+        public async Task<ActionResult<Pagination<ProductToReturn>>> GetProducts([FromQuery] ProductSpecParams specParams)
         {
             var spec = new ProductWithBrandAndCategorySpecifications(specParams);
 
             var products = await _productsRepo.GetAllWithSpecAsync(spec);
-           
-            return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturn>>(products));
+
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturn>>(products);
+
+            return Ok(new Pagination<ProductToReturn>(specParams.PageIndex , specParams.PageSize , data));
         }
 
         [ProducesResponseType(typeof(ProductToReturn) , StatusCodes.Status200OK)] //just Improving for Swagger Docs.
