@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using Talabat.APIs.Errors;
 using Talabat.APIs.Extensions;
 using Talabat.APIs.Helpers;
@@ -31,7 +32,15 @@ namespace Talabat.APIs
                 options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            //In-MemeoryDb [Redis] for BasketModule
+            webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>(options => 
+            {
+                var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis");
+                return ConnectionMultiplexer.Connect(connection);
+            });
+
             webApplicationBuilder.Services.AddApplicationServices(); //"AddApplicationServices()" => Custom Extension Method.
+
 
             #endregion
 
