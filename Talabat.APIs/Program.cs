@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -6,6 +7,7 @@ using Talabat.APIs.Errors;
 using Talabat.APIs.Extensions;
 using Talabat.APIs.Helpers;
 using Talabat.APIs.Middlewares;
+using Talabat.Core.Entities.Identity;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repository;
 using Talabat.Repository.Data;
@@ -47,6 +49,7 @@ namespace Talabat.APIs
 
             webApplicationBuilder.Services.AddApplicationServices(); //"AddApplicationServices()" => Custom Extension Method.
 
+            webApplicationBuilder.Services.AddIdentityServices();
 
             #endregion
 
@@ -68,7 +71,10 @@ namespace Talabat.APIs
                 await _dbContext.Database.MigrateAsync(); // Update-Database
                 await StoreContextSeed.SeedAsync(_dbContext); // Data Seeding
 
+                //Identity Db [DI]
                 await _identityDbContext.Database.MigrateAsync(); // Update-Database
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                await AppIdentityDbContextSeed.SeedUserAsync(userManager);
             }
             catch (Exception ex)
             {
