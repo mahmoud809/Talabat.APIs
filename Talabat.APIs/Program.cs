@@ -9,6 +9,7 @@ using Talabat.APIs.Middlewares;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repository;
 using Talabat.Repository.Data;
+using Talabat.Repository.Identity;
 
 namespace Talabat.APIs
 {
@@ -32,6 +33,11 @@ namespace Talabat.APIs
                 options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            webApplicationBuilder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
+            });
+
             //In-MemeoryDb [Redis] for BasketModule
             webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>(options => 
             {
@@ -50,7 +56,10 @@ namespace Talabat.APIs
             
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
+            
             var _dbContext = services.GetRequiredService<StoreContext>(); // ASK CLR For Creating Object From DbContext Explicitly
+            
+            var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>(); // ASK CLR For Creating Object From AppIdentityDbContext Explicitly
 
             var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
@@ -58,6 +67,8 @@ namespace Talabat.APIs
             {
                 await _dbContext.Database.MigrateAsync(); // Update-Database
                 await StoreContextSeed.SeedAsync(_dbContext); // Data Seeding
+
+                await _identityDbContext.Database.MigrateAsync(); // Update-Database
             }
             catch (Exception ex)
             {
