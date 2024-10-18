@@ -14,7 +14,7 @@ namespace Talabat.APIs.Helpers
                 .ForMember(D => D.Category , O => O.MapFrom(S => S.Category.Name))
                 .ForMember(D => D.PictureUrl , O => O.MapFrom<ProductPictureURLResolver>());
 
-            CreateMap<Address, AddressDto>();
+            CreateMap<Address, AddressDto>().ReverseMap();
         }
     }
 }
