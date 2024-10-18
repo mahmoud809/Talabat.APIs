@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Talabat.APIs.DTOs;
 using Talabat.APIs.Errors;
+using Talabat.APIs.Extensions;
 using Talabat.Core.Entities.Identity;
 using Talabat.Core.Services.Contract;
 
@@ -16,15 +18,18 @@ namespace Talabat.APIs.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
         public AccountsController(UserManager<AppUser> userManager ,
             SignInManager<AppUser> signInManager,
-            ITokenService tokenService
+            ITokenService tokenService,
+            IMapper mapper
             ) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _mapper = mapper;
         }
 
         [HttpPost("login")] //POST : /api/accounts/login
@@ -79,6 +84,19 @@ namespace Talabat.APIs.Controllers
                 Token = await _tokenService.CreateTokenAsync(user, _userManager) //Because we have not stored token yet in our Db so we generate a new one 
                 //[Soon We will know how to store Created token in our Db]
             });
+        }
+
+
+        [Authorize]
+        [HttpGet("address")] //GET : /api/accounts/address
+        public async Task<ActionResult<AddressDto>> GetUserAddress()
+        {
+            
+
+            var user = await _userManager.FindUserWithAddressAysnc(User);
+
+            var address = _mapper.Map<Address, AddressDto>(user.Address);
+            return Ok(address);
         }
     }
 }
