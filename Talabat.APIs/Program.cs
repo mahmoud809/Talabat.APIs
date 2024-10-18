@@ -49,7 +49,7 @@ namespace Talabat.APIs
 
             webApplicationBuilder.Services.AddApplicationServices(); //"AddApplicationServices()" => Custom Extension Method.
 
-            webApplicationBuilder.Services.AddIdentityServices();
+            webApplicationBuilder.Services.AddIdentityServices(webApplicationBuilder.Configuration);
 
             #endregion
 
@@ -100,6 +100,9 @@ namespace Talabat.APIs
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers(); //This doesn't make any assumptions about routing and will rely on the user doing attribute routing (most commonly used in WebAPI controllers) to get requests to the right place.
 
