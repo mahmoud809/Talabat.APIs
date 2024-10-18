@@ -14,9 +14,9 @@ namespace Talabat.APIs.Extensions
             //Allow DI For All Controllers that Implement "IGenericRepository"
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-            
-            
-            
+            services.AddScoped(typeof(IBasketRepository), typeof(BasketRepository));
+
+
             //Allow DI For AutoMapper [typeof(MappingProfiles)] => means Apply All Config in this AutoMapping class.
             services.AddAutoMapper(typeof(MappingProfiles));
 
