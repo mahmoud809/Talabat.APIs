@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Talabat.Core.Entities.Identity;
+using Talabat.Core.Services.Contract;
 using Talabat.Repository.Identity;
+using Talabat.Service;
 
 namespace Talabat.APIs.Extensions
 {
@@ -9,6 +12,8 @@ namespace Talabat.APIs.Extensions
     {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {
+            services.AddScoped<ITokenService, TokenService>(); 
+
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 //options.Password.RequireDigit = true;
@@ -16,7 +21,7 @@ namespace Talabat.APIs.Extensions
             })
                 .AddEntityFrameworkStores<AppIdentityDbContext>(); //Add Defualt configurations for AppUser and Role
 
-            services.AddAuthentication(); // Allow DI for UserManager - RoleManger
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(); // Allow DI for UserManager - RoleManger
 
             return services; 
         }
