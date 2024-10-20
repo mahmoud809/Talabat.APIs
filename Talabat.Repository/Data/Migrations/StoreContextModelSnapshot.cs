@@ -47,7 +47,7 @@ namespace Talabat.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryMethod");
+                    b.ToTable("DeliveryMethods");
                 });
 
             modelBuilder.Entity("Talabat.Core.Entities.Order_Aggregate.Order", b =>
@@ -83,7 +83,7 @@ namespace Talabat.Repository.Data.Migrations
 
                     b.HasIndex("DeliveryMethodId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Talabat.Core.Entities.Order_Aggregate.OrderItem", b =>
@@ -107,7 +107,7 @@ namespace Talabat.Repository.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("Talabat.Core.Entities.Product", b =>
@@ -218,7 +218,7 @@ namespace Talabat.Repository.Data.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Order");
+                            b1.ToTable("Orders");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -254,7 +254,7 @@ namespace Talabat.Repository.Data.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItem");
+                            b1.ToTable("OrderItems");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
