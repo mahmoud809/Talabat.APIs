@@ -2,6 +2,17 @@
 {
     public class ProductItemOrdered
     {
+        public ProductItemOrdered() // For EFCore Migration : In Migration EFcore Chaine on Auto Generated Parameterless Constructor
+        {
+            
+        }
+        public ProductItemOrdered(int productId, string productName, string pictureUrl)
+        {
+            ProductId = productId;
+            ProductName = productName;
+            PictureUrl = pictureUrl;
+        }
+
         public int ProductId { get; set; }
         public string ProductName { get; set; }
         public string PictureUrl { get; set; }
